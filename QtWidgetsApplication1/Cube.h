@@ -10,9 +10,6 @@ public:
 				}
 			}
 		}
-		face[0][0][0] = 1;
-		face[0][0][1] = 2;
-		face[0][0][2] = 3;
 	}
 	void rotateFaceCW(int f) {
 		int tmp[3][3];
