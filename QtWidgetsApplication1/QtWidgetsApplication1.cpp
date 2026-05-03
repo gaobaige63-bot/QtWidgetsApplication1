@@ -15,7 +15,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     layout->addWidget(ui.btnTest, 1);
     this->resize(800, 600);
     connect(ui.btnTest, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveU();
+        cubeWidget->cube.moveR();
         cubeWidget->update();
         });
 }

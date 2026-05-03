@@ -48,5 +48,27 @@ public:
 		for (int i = 0; i < 3; i++)
 			face[3][0][i] = tmp[i];
 	}
+	void moveR() {
+		// 右面顺时针
+		rotateFaceCW(1);
+
+		int tmp[3];
+
+		// 保存上面的右列
+		for (int i = 0; i < 3; i++)
+			tmp[i] = face[0][i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[0][i][2] = face[2][i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[2][i][2] = face[5][i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[5][i][2] = face[4][2 - i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[4][2 - i][0] = tmp[i];
+	}
 };
 
