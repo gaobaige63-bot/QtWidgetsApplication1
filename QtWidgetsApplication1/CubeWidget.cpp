@@ -11,7 +11,7 @@ void CubeWidget::paintEvent(QPaintEvent*) {
 		Qt::blue,
 		Qt::red,
 		Qt::green,
-		Qt::magenta,
+		QColor(255,165,0),
 		Qt::yellow
 	};
 	int offsetX[6] = { 3,6,3,0,9,3 };

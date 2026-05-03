@@ -67,5 +67,27 @@ public:
 		for (int i = 0; i < 3; i++)
 			face[4][2 - i][0] = tmp[i];
 	}
+	void moveF() {
+		// 前面顺时针
+		rotateFaceCW(2);
+
+		int tmp[3];
+
+		// 保存上面的底行
+		for (int i = 0; i < 3; i++)
+			tmp[i] = face[0][2][i];
+
+		for (int i = 0; i < 3; i++)
+			face[0][2][i] = face[3][2 - i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[3][i][2] = face[5][0][i];
+
+		for (int i = 0; i < 3; i++)
+			face[5][0][i] = face[1][2 - i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[1][i][0] = tmp[i];
+	}
 };
 
