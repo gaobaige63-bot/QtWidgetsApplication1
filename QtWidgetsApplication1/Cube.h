@@ -89,5 +89,68 @@ public:
 		for (int i = 0; i < 3; i++)
 			face[1][i][0] = tmp[i];
 	}
+	void moveL() {
+
+		rotateFaceCW(3);
+
+		int tmp[3];
+
+		for (int i = 0; i < 3; i++)
+			tmp[i] = face[0][i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[0][i][0] = face[4][2 - i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[4][2 - i][2] = face[5][i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[5][i][0] = face[2][i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[2][i][0] = tmp[i];
+	}
+	void moveD() {
+
+		rotateFaceCW(5);
+
+		int tmp[3];
+
+		for (int i = 0; i < 3; i++)
+			tmp[i] = face[2][2][i];
+
+		for (int i = 0; i < 3; i++)
+			face[2][2][i] = face[3][2][i];
+
+		for (int i = 0; i < 3; i++)
+			face[3][2][i] = face[4][2][i];
+
+		for (int i = 0; i < 3; i++)
+			face[4][2][i] = face[1][2][i];
+
+		for (int i = 0; i < 3; i++)
+			face[1][2][i] = tmp[i];
+	}
+	void moveB() {
+
+		rotateFaceCW(4);
+
+		int tmp[3];
+
+		for (int i = 0; i < 3; i++)
+			tmp[i] = face[0][0][i];
+
+		for (int i = 0; i < 3; i++)
+			face[0][0][i] = face[1][i][2];
+
+		for (int i = 0; i < 3; i++)
+			face[1][i][2] = face[5][2][2-i];
+
+		for (int i = 0; i < 3; i++)
+			face[5][2][i] = face[3][i][0];
+
+		for (int i = 0; i < 3; i++)
+			face[3][i][0] = tmp[i];
+	}
 };
 

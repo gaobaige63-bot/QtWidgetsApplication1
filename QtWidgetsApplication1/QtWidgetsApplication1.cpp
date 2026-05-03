@@ -15,6 +15,9 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     layout->addWidget(ui.btnU);
     layout->addWidget(ui.btnR);
     layout->addWidget(ui.btnF);
+    layout->addWidget(ui.btnL);
+    layout->addWidget(ui.btnD);
+    layout->addWidget(ui.btnB);
     mainlayout->addLayout(layout, 1);
     this->resize(800, 600);
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
@@ -27,6 +30,18 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         });
     connect(ui.btnF, &QPushButton::clicked, this, [=]() {
         cubeWidget->cube.moveF();
+        cubeWidget->update();
+        });
+    connect(ui.btnL, &QPushButton::clicked, this, [=]() {
+        cubeWidget->cube.moveL();
+        cubeWidget->update();
+        });
+    connect(ui.btnD, &QPushButton::clicked, this, [=]() {
+        cubeWidget->cube.moveD();
+        cubeWidget->update();
+        });
+    connect(ui.btnB, &QPushButton::clicked, this, [=]() {
+        cubeWidget->cube.moveB();
         cubeWidget->update();
         });
 }
