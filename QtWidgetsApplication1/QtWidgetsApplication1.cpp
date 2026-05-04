@@ -21,27 +21,75 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     mainlayout->addLayout(layout, 1);
     this->resize(800, 600);
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveU();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveU();
+            cubeWidget->cube.moveU();
+            cubeWidget->cube.moveU();
+        }
+        else
+        {
+            cubeWidget->cube.moveU();
+        }  
         cubeWidget->update();
         });
     connect(ui.btnR, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveR();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveR();
+            cubeWidget->cube.moveR();
+            cubeWidget->cube.moveR();
+        }
+        else
+        {
+            cubeWidget->cube.moveR();
+        }
         cubeWidget->update();
         });
     connect(ui.btnF, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveF();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveF();
+            cubeWidget->cube.moveF();
+            cubeWidget->cube.moveF();
+        }
+        else
+        {
+            cubeWidget->cube.moveF();
+        }
         cubeWidget->update();
         });
     connect(ui.btnL, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveL();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveL();
+            cubeWidget->cube.moveL();
+            cubeWidget->cube.moveL();
+        }
+        else
+        {
+            cubeWidget->cube.moveL();
+        }
         cubeWidget->update();
         });
     connect(ui.btnD, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveD();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveD();
+            cubeWidget->cube.moveD();
+            cubeWidget->cube.moveD();
+        }
+        else
+        {
+            cubeWidget->cube.moveD();
+        }
         cubeWidget->update();
         });
     connect(ui.btnB, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.moveB();
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube.moveB();
+            cubeWidget->cube.moveB();
+            cubeWidget->cube.moveB();
+        }
+        else
+        {
+            cubeWidget->cube.moveB();
+        }
         cubeWidget->update();
         });
 }
