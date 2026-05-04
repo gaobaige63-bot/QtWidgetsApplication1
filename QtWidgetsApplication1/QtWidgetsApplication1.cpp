@@ -21,7 +21,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     layout->addWidget(ui.btnD);
     layout->addWidget(ui.btnB);
     mainlayout->addLayout(layout, 1);
-    this->resize(800, 600);
+    this->resize(1000, 700);
     connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
         cubeWidget->cube.scramble(30);
         cubeWidget->update();
