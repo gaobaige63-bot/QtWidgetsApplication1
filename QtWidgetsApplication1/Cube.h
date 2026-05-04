@@ -172,5 +172,20 @@ public:
 			}
 		}
 	}
+	bool isSolved() const {
+		for (int f = 0; f < 6; f++) {
+			int color = face[f][0][0];
+
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (face[f][i][j] != color) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
 };
 

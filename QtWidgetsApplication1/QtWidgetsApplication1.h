@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_QtWidgetsApplication1.h"
 #include"CubeWidget.h"
+#include <QElapsedTimer>  
 
 class QtWidgetsApplication1 : public QMainWindow
 {
@@ -15,5 +16,7 @@ public:
 private:
     Ui::mainWindow ui;
     CubeWidget* cubeWidget;
+    QElapsedTimer timer;
+    bool gameStarted = false;
 };
 

@@ -4,6 +4,7 @@
 #include<QHBoxLayout>
 #include<QVBoxLayout>
 #include<QWidget>
+#include<QMessageBox>
 QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -24,6 +25,8 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
         cubeWidget->cube.scramble(30);
         cubeWidget->update();
+        timer.start();
+        gameStarted = true;
         });
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -36,6 +39,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveU();
         }  
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
     connect(ui.btnR, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -48,6 +62,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveR();
         }
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
     connect(ui.btnF, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -60,6 +85,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveF();
         }
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
     connect(ui.btnL, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -72,6 +108,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveL();
         }
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
     connect(ui.btnD, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -84,6 +131,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveD();
         }
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
     connect(ui.btnB, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -96,6 +154,17 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.moveB();
         }
         cubeWidget->update();
+        if (gameStarted && cubeWidget->cube.isSolved()) {
+            gameStarted = false;
+
+            double seconds = timer.elapsed() / 1000.0;
+
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
+            );
+        }
         });
 }
 
