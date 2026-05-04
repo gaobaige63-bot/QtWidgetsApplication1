@@ -12,6 +12,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     cubeWidget = new CubeWidget(this);
     mainlayout->addWidget(cubeWidget, 3);
     QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(ui.btnScramble);
     layout->addWidget(ui.btnU);
     layout->addWidget(ui.btnR);
     layout->addWidget(ui.btnF);
@@ -20,6 +21,10 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     layout->addWidget(ui.btnB);
     mainlayout->addLayout(layout, 1);
     this->resize(800, 600);
+    connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
+        cubeWidget->cube.scramble(30);
+        cubeWidget->update();
+        });
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveU();

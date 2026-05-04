@@ -1,4 +1,6 @@
 #pragma once
+#include<cstdlib>
+#include<ctime>
 class Cube{
 public:
 	int face[6][3][3];
@@ -150,7 +152,25 @@ public:
 			face[5][2][i] = face[3][i][0];
 
 		for (int i = 0; i < 3; i++)
-			face[3][i][0] = tmp[i];
+			face[3][i][0] = tmp[2-i];
+	}
+	void scramble(int steps = 20) {
+		static bool inited = false;
+		if (!inited) {
+			srand(time(nullptr));
+			inited = true;
+		}
+		for (int i = 0;i < steps;i++) {
+			int r = rand() % 6;
+			switch (r) {
+			case 0:moveU();break;
+			case 1:moveR();break;
+			case 2:moveF();break;
+			case 3:moveL();break;
+			case 4:moveD();break;
+			case 5:moveB();break;
+			}
+		}
 	}
 };
 
