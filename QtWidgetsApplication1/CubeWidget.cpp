@@ -11,6 +11,7 @@ void drawParallelogram(QPainter& p, QPoint a, QPoint b, QPoint c, QPoint d, QCol
 }
 void CubeWidget::paintEvent(QPaintEvent*) {
 	QPainter p(this);
+    
 	int size = 40;
 	int gap = 2;
 	QColor colors[6] = {
@@ -35,7 +36,7 @@ void CubeWidget::paintEvent(QPaintEvent*) {
 			}
 		}
 	}
-
+    p.setPen(QPen(Qt::black, 2));
     int x0 = 570;
     int y0 = 220;
     int s = 35;
@@ -43,8 +44,12 @@ void CubeWidget::paintEvent(QPaintEvent*) {
     int dy = -18;
 
     int topFace = 0;
-    int frontFace = 2;
-    int rightFace = 1;
+
+    int frontFaces[4] = { 2, 1, 4, 3 };
+    int rightFaces[4] = { 1, 4, 3, 2 };
+
+    int frontFace = frontFaces[viewIndex];
+    int rightFace = rightFaces[viewIndex];
 
     //  前面 
     for (int i = 0; i < 3; i++) {
@@ -60,9 +65,25 @@ void CubeWidget::paintEvent(QPaintEvent*) {
     }
 
     //  上面 
+    auto getTopColorIndex = [&](int i, int j) {
+        switch (viewIndex) {
+        case 0:
+            return cube.face[0][i][j];
+
+        case 1:
+            return cube.face[0][2 - j][i];
+
+        case 2:
+            return cube.face[0][2 - i][2 - j];
+
+        case 3:
+            return cube.face[0][j][2 - i];
+        }
+        return cube.face[0][i][j];
+        };
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            QColor c = colors[cube.face[topFace][i][j]];
+            QColor c = colors[getTopColorIndex(i,j)];
 
             int x = x0 + j * s + (2 - i) * dx;
             int y = y0 - 3 * 18 + i * 18+18;

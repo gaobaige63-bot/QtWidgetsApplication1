@@ -9,11 +9,23 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+    QString btnStyle = "font-size: 18px; min-height: 50px;";
+
+    ui.btnU->setStyleSheet(btnStyle);
+    ui.btnR->setStyleSheet(btnStyle);
+    ui.btnF->setStyleSheet(btnStyle);
+    ui.btnL->setStyleSheet(btnStyle);
+    ui.btnD->setStyleSheet(btnStyle);
+    ui.btnB->setStyleSheet(btnStyle);
+    ui.btnScramble->setStyleSheet(btnStyle);
+    ui.btnView->setStyleSheet(btnStyle);
+
     QHBoxLayout* mainlayout = new QHBoxLayout(ui.centralWidget);
     cubeWidget = new CubeWidget(this);
     mainlayout->addWidget(cubeWidget, 3);
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(ui.btnScramble);
+    layout->addWidget(ui.btnView);
     layout->addWidget(ui.btnU);
     layout->addWidget(ui.btnR);
     layout->addWidget(ui.btnF);
@@ -22,11 +34,31 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     layout->addWidget(ui.btnB);
     mainlayout->addLayout(layout, 1);
     this->resize(1000, 700);
+
     connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
-        cubeWidget->cube.scramble(30);
-        cubeWidget->update();
-        timer.start();
-        gameStarted = true;
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->cube = Cube();
+            cubeWidget->update();
+            gameStarted = false;
+        }
+        else
+        {
+            cubeWidget->cube.scramble(30);
+            cubeWidget->update();
+            timer.start();
+            gameStarted = true;
+        }
+        });
+    connect(ui.btnView, &QPushButton::clicked, this, [=]() {
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            cubeWidget->nextView();
+            cubeWidget->nextView();
+            cubeWidget->nextView();
+        }
+        else
+        {
+            cubeWidget->nextView();
+        } 
         });
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
