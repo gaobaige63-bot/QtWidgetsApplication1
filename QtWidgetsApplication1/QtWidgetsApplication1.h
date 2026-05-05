@@ -3,6 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_QtWidgetsApplication1.h"
 #include"CubeWidget.h"
+#include <QLabel>
+#include <QTimer>
 #include <QElapsedTimer>  
 
 class QtWidgetsApplication1 : public QMainWindow
@@ -16,7 +18,17 @@ public:
 private:
     Ui::mainWindow ui;
     CubeWidget* cubeWidget;
+    QLabel* lblTitle;
+    QLabel* lblStatus;
+    QLabel* lblTime;
+    QLabel* lblView;
+
+    QTimer* refreshTimer;
     QElapsedTimer timer;
     bool gameStarted = false;
+    QString statusText = "Ready";
+
+    void updateStatusLabels();
+    void checkSolved();
 };
 

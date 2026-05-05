@@ -28,7 +28,7 @@ void CubeWidget::paintEvent(QPaintEvent*) {
 		for (int i = 0;i < 3;i++) {
 			for (int j = 0;j < 3;j++) {
 				int x = (offsetX[f] + j) * (size + gap) + 10;
-				int y = (offsetY[f] + i) * (size + gap) + 10;
+				int y = (offsetY[f] + i) * (size + gap) + 100;
 				int colorIndex = cube.face[f][i][j];
 				QColor c = colors[colorIndex];
 				p.fillRect(x, y, size, size, c);
@@ -38,7 +38,7 @@ void CubeWidget::paintEvent(QPaintEvent*) {
 	}
     p.setPen(QPen(Qt::black, 2));
     int x0 = 570;
-    int y0 = 220;
+    int y0 = 250;
     int s = 35;
     int dx = 18;
     int dy = -18;
