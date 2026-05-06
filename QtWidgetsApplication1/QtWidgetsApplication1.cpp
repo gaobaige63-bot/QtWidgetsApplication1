@@ -29,14 +29,14 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     //  ¶¥²¿×´Ì¬À¸ 
     QHBoxLayout* statusLayout = new QHBoxLayout();
 
-    lblTitle = new QLabel("Rubik's Cube Trainer");
+    lblTitle = new QLabel("\351\255\224\346\226\271\350\256\255\347\273\203\345\231\250");
     lblStatus = new QLabel("Status: Ready");
     lblTime = new QLabel("Time: 0.00s");
     lblView = new QLabel("View: Front");
 
     QString labelStyle = "font-size: 16px; font-weight: bold; color: white;";
 
-    lblTitle->setStyleSheet("font-size: 20px; font-weight: bold; color: white;");
+    lblTitle->setStyleSheet("font-size: 30px; font-weight: bold; color: white;");
     lblStatus->setStyleSheet(labelStyle);
     lblTime->setStyleSheet(labelStyle);
     lblView->setStyleSheet(labelStyle);
@@ -79,6 +79,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube = Cube();
             cubeWidget->update();
             gameStarted = false; 
+            waitingFirstMove = false;
             statusText = "Ready";
             updateStatusLabels();
         }
@@ -87,8 +88,9 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
             cubeWidget->cube.scramble(30);
             cubeWidget->update();
             timer.start();
-            gameStarted = true;
-            statusText = "Scrambled";
+            gameStarted = false;
+            waitingFirstMove = true;
+            statusText = "Observing";
             updateStatusLabels();
         }
         });
@@ -105,6 +107,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         updateStatusLabels();
         });
     connect(ui.btnU, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveU();
             cubeWidget->cube.moveU();
@@ -118,6 +121,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     connect(ui.btnR, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveR();
             cubeWidget->cube.moveR();
@@ -131,6 +135,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     connect(ui.btnF, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveF();
             cubeWidget->cube.moveF();
@@ -144,6 +149,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     connect(ui.btnL, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveL();
             cubeWidget->cube.moveL();
@@ -157,6 +163,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     connect(ui.btnD, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveD();
             cubeWidget->cube.moveD();
@@ -170,6 +177,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     connect(ui.btnB, &QPushButton::clicked, this, [=]() {
+        startTimerOnFirstMove();
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube.moveB();
             cubeWidget->cube.moveB();
@@ -183,6 +191,16 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     updateStatusLabels();
+}
+void QtWidgetsApplication1::startTimerOnFirstMove()
+{
+    if (waitingFirstMove) {
+        timer.start();
+        gameStarted = true;
+        waitingFirstMove = false;
+        statusText = "Solving";
+        updateStatusLabels();
+    }
 }
 void QtWidgetsApplication1::updateStatusLabels()
 {
@@ -237,7 +255,7 @@ void QtWidgetsApplication1::checkSolved()
         );
     }
     else if (gameStarted) {
-        statusText = "Scrambled";
+        statusText = "Sovling";
     }
     else {
         statusText = cubeWidget->cube.isSolved() ? "Ready" : "Practice";

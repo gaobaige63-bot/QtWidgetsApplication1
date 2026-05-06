@@ -25,10 +25,12 @@ private:
 
     QTimer* refreshTimer;
     QElapsedTimer timer;
+    bool waitingFirstMove = false;
     bool gameStarted = false;
     QString statusText = "Ready";
 
     void updateStatusLabels();
+    void startTimerOnFirstMove();
     void checkSolved();
 };
 

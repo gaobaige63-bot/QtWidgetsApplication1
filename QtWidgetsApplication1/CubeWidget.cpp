@@ -1,7 +1,20 @@
 #include "CubeWidget.h"
 #include<QPainter>
 
-CubeWidget::CubeWidget(QWidget* parent):QWidget(parent){}
+CubeWidget::CubeWidget(QWidget* parent):QWidget(parent){
+    viewAnimTimer = new QTimer(this);
+
+    connect(viewAnimTimer, &QTimer::timeout, this, [=]() {
+        viewAnim += 0.05;
+
+        if (viewAnim >= 1.0) {
+            viewAnim = 1.0;
+            viewAnimTimer->stop();
+        }
+
+        update();
+        });
+}
 void drawParallelogram(QPainter& p, QPoint a, QPoint b, QPoint c, QPoint d, QColor color) {
 	QPolygon poly;
 	poly << a << b << c << d;
@@ -37,11 +50,17 @@ void CubeWidget::paintEvent(QPaintEvent*) {
 		}
 	}
     p.setPen(QPen(Qt::black, 2));
-    int x0 = 570;
+    double t = viewAnim;
+    double ease = 1.0 - (1.0 - t) * (1.0 - t) * (1.0 - t);
+
+    int x0 = 570 + static_cast<int>((1 - ease) * 40);
     int y0 = 250;
     int s = 35;
     int dx = 18;
     int dy = -18;
+
+    p.save();
+    p.setOpacity(0.25 + 0.75 * ease);
 
     int topFace = 0;
 
@@ -117,4 +136,6 @@ void CubeWidget::paintEvent(QPaintEvent*) {
             p.drawPolygon(poly);
         }
     }
+
+    p.restore();
 }
