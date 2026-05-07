@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QElapsedTimer>  
+#include<QVector>
 
 class QtWidgetsApplication1 : public QMainWindow
 {
@@ -29,8 +30,12 @@ private:
     bool gameStarted = false;
     QString statusText = "Ready";
 
+    QVector<double> solveTimes;
+    double bestTime = -1.0;
+
     void updateStatusLabels();
     void startTimerOnFirstMove();
     void checkSolved();
+
 };
 

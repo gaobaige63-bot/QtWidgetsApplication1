@@ -23,6 +23,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     ui.btnB->setStyleSheet(btnStyle);
     ui.btnScramble->setStyleSheet(btnStyle);
     ui.btnView->setStyleSheet(btnStyle);
+    ui.btnRecord->setStyleSheet(btnStyle);
 
     QVBoxLayout* outerLayout = new QVBoxLayout(ui.centralWidget);
 
@@ -55,6 +56,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     cubeWidget = new CubeWidget(this);
     mainlayout->addWidget(cubeWidget, 4);
     QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(ui.btnRecord);
     layout->addWidget(ui.btnScramble);
     layout->addWidget(ui.btnView);
     layout->addSpacing(20);
@@ -74,6 +76,26 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         });
     refreshTimer->start(50);
 
+    connect(ui.btnRecord, &QPushButton::clicked, this, [=]() {
+        if (solveTimes.isEmpty()) {
+            QMessageBox::information(this, "Records", "No records yet.");
+            return;
+        }
+
+        QString text;
+        text += "Solve History:\n\n";
+
+        for (int i = 0; i < solveTimes.size(); i++) {
+            text += QString("%1. %2 seconds\n")
+                .arg(i + 1)
+                .arg(solveTimes[i], 0, 'f', 2);
+        }
+
+        text += "\nBest Time: ";
+        text += QString("%1 seconds").arg(bestTime, 0, 'f', 2);
+
+        QMessageBox::information(this, "Records", text);
+        });
     connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
             cubeWidget->cube = Cube();
@@ -245,15 +267,33 @@ void QtWidgetsApplication1::checkSolved()
         statusText = "Solved";
 
         double seconds = timer.elapsed() / 1000.0;
+        solveTimes.push_back(seconds);
+        bool isNewRecord = false;
+        if (bestTime < 0 || seconds < bestTime) {
+            bestTime = seconds;
+            isNewRecord = true;
+        }
 
         updateStatusLabels();
 
-        QMessageBox::information(
-            this,
-            "Solved!",
-            QString("You solved the cube in %1 seconds.").arg(seconds, 0, 'f', 2)
-        );
+        if (isNewRecord) {
+            QMessageBox::information(
+                this,
+                "New Record!",
+                QString("New best time: %1 seconds!").arg(seconds, 0, 'f', 2)
+            );
+        }
+        else {
+            QMessageBox::information(
+                this,
+                "Solved!",
+                QString("Solved in %1 seconds.\nBest time: %2 seconds.")
+                .arg(seconds, 0, 'f', 2)
+                .arg(bestTime, 0, 'f', 2)
+            );
+        }
     }
+    
     else if (gameStarted) {
         statusText = "Sovling";
     }
