@@ -26,6 +26,8 @@ private:
 
     bool challengeMode = false;
 
+    void setMoveButtonsEnabled(bool enabled);
+
     void createMenuPage();
     void createGamePage();
     void enterGame(bool challenge);

@@ -172,7 +172,14 @@ void QtWidgetsApplication1::createGamePage()
             cubeWidget->update();
             gameStarted = false; 
             waitingFirstMove = false;
-            statusText = "Ready";
+            if (challengeMode) {
+                statusText = "Ready";
+                setMoveButtonsEnabled(false);
+            }
+            else {
+                statusText = "Ready";
+                setMoveButtonsEnabled(true);
+            }
             updateStatusLabels();
         }
         else
@@ -184,6 +191,7 @@ void QtWidgetsApplication1::createGamePage()
                 gameStarted = false;
                 waitingFirstMove = true;
                 statusText = "Observing";
+                setMoveButtonsEnabled(true);
             }else{
                 gameStarted = false;
                 waitingFirstMove = false;
@@ -353,6 +361,7 @@ void QtWidgetsApplication1::checkSolved()
     if (challengeMode&&gameStarted && cubeWidget->cube.isSolved()) {
         gameStarted = false;
         statusText = "Solved";
+        setMoveButtonsEnabled(false);
 
         double seconds = timer.elapsed() / 1000.0;
         solveTimes.push_back(seconds);
@@ -402,16 +411,27 @@ void QtWidgetsApplication1::enterGame(bool challenge)
     waitingFirstMove = false;
 
     if (challengeMode) {
-        statusText = "Challenge Ready";
+        statusText = "Ready";
+        setMoveButtonsEnabled(false);
     }
     else {
-        statusText = "Practice Ready";
+        statusText = "Ready";
+        setMoveButtonsEnabled(true);
     }
 
     ui.btnRecord->setVisible(challengeMode);
     updateStatusLabels();
 
     stackedWidget->setCurrentWidget(gamePage);
+}
+void QtWidgetsApplication1::setMoveButtonsEnabled(bool enabled)
+{
+    ui.btnU->setEnabled(enabled);
+    ui.btnR->setEnabled(enabled);
+    ui.btnF->setEnabled(enabled);
+    ui.btnL->setEnabled(enabled);
+    ui.btnD->setEnabled(enabled);
+    ui.btnB->setEnabled(enabled);
 }
 QtWidgetsApplication1::~QtWidgetsApplication1()
 {}
