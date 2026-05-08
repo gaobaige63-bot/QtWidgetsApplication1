@@ -3,6 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_QtWidgetsApplication1.h"
 #include"CubeWidget.h"
+#include <QStackedWidget>
+#include <QPushButton>
 #include <QLabel>
 #include <QTimer>
 #include <QElapsedTimer>  
@@ -17,6 +19,17 @@ public:
     ~QtWidgetsApplication1();
 
 private:
+    QStackedWidget* stackedWidget;
+
+    QWidget* menuPage;
+    QWidget* gamePage;
+
+    bool challengeMode = false;
+
+    void createMenuPage();
+    void createGamePage();
+    void enterGame(bool challenge);
+
     Ui::mainWindow ui;
     CubeWidget* cubeWidget;
     QLabel* lblTitle;

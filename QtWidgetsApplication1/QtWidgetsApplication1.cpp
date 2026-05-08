@@ -8,11 +8,70 @@
 #include<QVBoxLayout>
 #include<QWidget>
 #include<QMessageBox>
-QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
+QtWidgetsApplication1::QtWidgetsApplication1(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
     this->resize(1000, 700);
+
+    stackedWidget = new QStackedWidget(this);
+    setCentralWidget(stackedWidget);
+
+    createMenuPage();
+    createGamePage();
+
+    stackedWidget->addWidget(menuPage);
+    stackedWidget->addWidget(gamePage);
+
+    stackedWidget->setCurrentWidget(menuPage);
+}
+void QtWidgetsApplication1::createMenuPage()
+{
+    menuPage = new QWidget(this);
+
+    QVBoxLayout* layout = new QVBoxLayout(menuPage);
+    layout->setAlignment(Qt::AlignCenter);
+
+    QLabel* title = new QLabel("\351\255\224\346\226\271\350\256\255\347\273\203\345\231\250");
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("font-size: 42px; font-weight: bold; color: white;");
+
+    QPushButton* btnPractice = new QPushButton("Practice Mode");
+    QPushButton* btnChallenge = new QPushButton("Challenge Mode");
+    QPushButton* btnExit = new QPushButton("Exit");
+
+    QString menuBtnStyle =
+        "font-size: 22px;"
+        "min-width: 260px;"
+        "min-height: 55px;";
+
+    btnPractice->setStyleSheet(menuBtnStyle);
+    btnChallenge->setStyleSheet(menuBtnStyle);
+    btnExit->setStyleSheet(menuBtnStyle);
+
+    layout->addWidget(title);
+    layout->addSpacing(40);
+    layout->addWidget(btnPractice, 0, Qt::AlignCenter);
+    layout->addWidget(btnChallenge, 0, Qt::AlignCenter);
+    layout->addWidget(btnExit, 0, Qt::AlignCenter);
+
+    connect(btnPractice, &QPushButton::clicked, this, [=]() {
+        enterGame(false);
+        });
+
+    connect(btnChallenge, &QPushButton::clicked, this, [=]() {
+        enterGame(true);
+        });
+
+    connect(btnExit, &QPushButton::clicked, this, [=]() {
+        close();
+        });
+}
+void QtWidgetsApplication1::createGamePage()
+{
+    gamePage = new QWidget(this);
+
+    QVBoxLayout* outerLayout = new QVBoxLayout(gamePage);
     QString btnStyle = "font-size: 18px; min-height: 50px;";
 
     ui.btnU->setStyleSheet(btnStyle);
@@ -23,9 +82,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     ui.btnB->setStyleSheet(btnStyle);
     ui.btnScramble->setStyleSheet(btnStyle);
     ui.btnView->setStyleSheet(btnStyle);
-    ui.btnRecord->setStyleSheet(btnStyle);
-
-    QVBoxLayout* outerLayout = new QVBoxLayout(ui.centralWidget);
+   
 
     //  ¶¥²¿×´Ì¬À¸ 
     QHBoxLayout* statusLayout = new QHBoxLayout();
@@ -35,7 +92,7 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     lblTime = new QLabel("Time: 0.00s");
     lblView = new QLabel("View: Front");
 
-    QString labelStyle = "font-size: 16px; font-weight: bold; color: white;";
+    QString labelStyle = "font-size: 20px; font-weight: bold; color: white;";
 
     lblTitle->setStyleSheet("font-size: 30px; font-weight: bold; color: white;");
     lblStatus->setStyleSheet(labelStyle);
@@ -52,11 +109,24 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
 
     outerLayout->addLayout(statusLayout);
 
-    QHBoxLayout* mainlayout = new QHBoxLayout(ui.centralWidget);
+    QHBoxLayout* mainlayout = new QHBoxLayout(gamePage);
+    QVBoxLayout* cubeAreaLayout = new QVBoxLayout();
     cubeWidget = new CubeWidget(this);
-    mainlayout->addWidget(cubeWidget, 4);
+    cubeAreaLayout->addWidget(cubeWidget);
+    QHBoxLayout* extraButtonLayout = new QHBoxLayout();
+
+    QPushButton* btnBackMenu = new QPushButton("\350\277\224\345\233\236\350\217\234\345\215\225");
+    btnBackMenu->setStyleSheet(btnStyle);
+
+    ui.btnRecord->setStyleSheet(btnStyle);
+
+    extraButtonLayout->addWidget(btnBackMenu);
+    extraButtonLayout->addWidget(ui.btnRecord);
+    extraButtonLayout->addStretch();   // ÈÃ°´Å¥¿¿×ó
+
+    cubeAreaLayout->addLayout(extraButtonLayout);
+    mainlayout->addLayout(cubeAreaLayout, 4);
     QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(ui.btnRecord);
     layout->addWidget(ui.btnScramble);
     layout->addWidget(ui.btnView);
     layout->addSpacing(20);
@@ -109,10 +179,16 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         {
             cubeWidget->cube.scramble(30);
             cubeWidget->update();
-            timer.start();
-            gameStarted = false;
-            waitingFirstMove = true;
-            statusText = "Observing";
+            if (challengeMode) {
+                timer.start();
+                gameStarted = false;
+                waitingFirstMove = true;
+                statusText = "Observing";
+            }else{
+                gameStarted = false;
+                waitingFirstMove = false;
+                statusText = "Practice";
+            }
             updateStatusLabels();
         }
         });
@@ -213,6 +289,18 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
         checkSolved();
         });
     updateStatusLabels();
+    connect(btnBackMenu, &QPushButton::clicked, this, [=]() {
+        gameStarted = false;
+        waitingFirstMove = false;
+        statusText = "Ready";
+
+        cubeWidget->cube = Cube();
+        cubeWidget->update();
+
+        updateStatusLabels();
+
+        stackedWidget->setCurrentWidget(menuPage);
+        });
 }
 void QtWidgetsApplication1::startTimerOnFirstMove()
 {
@@ -262,7 +350,7 @@ void QtWidgetsApplication1::checkSolved()
 {
     cubeWidget->update();
 
-    if (gameStarted && cubeWidget->cube.isSolved()) {
+    if (challengeMode&&gameStarted && cubeWidget->cube.isSolved()) {
         gameStarted = false;
         statusText = "Solved";
 
@@ -302,6 +390,28 @@ void QtWidgetsApplication1::checkSolved()
     }
 
     updateStatusLabels();
+}
+void QtWidgetsApplication1::enterGame(bool challenge)
+{
+    challengeMode = challenge;
+
+    cubeWidget->cube = Cube();
+    cubeWidget->update();
+
+    gameStarted = false;
+    waitingFirstMove = false;
+
+    if (challengeMode) {
+        statusText = "Challenge Ready";
+    }
+    else {
+        statusText = "Practice Ready";
+    }
+
+    ui.btnRecord->setVisible(challengeMode);
+    updateStatusLabels();
+
+    stackedWidget->setCurrentWidget(gamePage);
 }
 QtWidgetsApplication1::~QtWidgetsApplication1()
 {}
