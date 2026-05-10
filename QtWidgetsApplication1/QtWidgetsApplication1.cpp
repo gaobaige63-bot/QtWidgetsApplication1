@@ -8,6 +8,14 @@
 #include<QVBoxLayout>
 #include<QWidget>
 #include<QMessageBox>
+#include <QDialog>
+#include <QTableWidget>
+#include <QHeaderView>
+#include <QPushButton> 
+#include<QFile>
+#include<QTextStream>
+#include<QTextEdit>
+
 QtWidgetsApplication1::QtWidgetsApplication1(QWidget* parent)
     : QMainWindow(parent)
 {
@@ -22,6 +30,8 @@ QtWidgetsApplication1::QtWidgetsApplication1(QWidget* parent)
 
     stackedWidget->addWidget(menuPage);
     stackedWidget->addWidget(gamePage);
+
+    loadRecords();
 
     stackedWidget->setCurrentWidget(menuPage);
 }
@@ -38,6 +48,7 @@ void QtWidgetsApplication1::createMenuPage()
 
     QPushButton* btnPractice = new QPushButton("Practice Mode");
     QPushButton* btnChallenge = new QPushButton("Challenge Mode");
+    QPushButton* btnHelp = new QPushButton("Help");
     QPushButton* btnExit = new QPushButton("Exit");
 
     QString menuBtnStyle =
@@ -47,12 +58,14 @@ void QtWidgetsApplication1::createMenuPage()
 
     btnPractice->setStyleSheet(menuBtnStyle);
     btnChallenge->setStyleSheet(menuBtnStyle);
+    btnHelp->setStyleSheet(menuBtnStyle);
     btnExit->setStyleSheet(menuBtnStyle);
 
     layout->addWidget(title);
     layout->addSpacing(40);
     layout->addWidget(btnPractice, 0, Qt::AlignCenter);
     layout->addWidget(btnChallenge, 0, Qt::AlignCenter);
+    layout->addWidget(btnHelp, 0, Qt::AlignCenter);
     layout->addWidget(btnExit, 0, Qt::AlignCenter);
 
     connect(btnPractice, &QPushButton::clicked, this, [=]() {
@@ -61,6 +74,46 @@ void QtWidgetsApplication1::createMenuPage()
 
     connect(btnChallenge, &QPushButton::clicked, this, [=]() {
         enterGame(true);
+        });
+
+    connect(btnHelp, &QPushButton::clicked, this, [=]() {
+        QDialog dialog(this);
+        dialog.setWindowTitle("Help");
+        dialog.resize(650, 520);
+
+        QVBoxLayout* layout = new QVBoxLayout(&dialog);
+
+        QTextEdit* textEdit = new QTextEdit();
+        textEdit->setReadOnly(true);
+        textEdit->setStyleSheet(
+            "font-size: 16px;"
+            "background-color: #f5f5f5;"
+            "color: #222222;"
+        );
+
+        QFile file(":/help.txt");
+
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QByteArray data = file.readAll();
+            QString helpText = QString::fromUtf8(data);
+            textEdit->setText(helpText);
+            file.close();
+        }
+        else {
+            textEdit->setText("Failed to load help.txt.\nPlease make sure help.txt is in the program running directory.");
+        }
+
+        QPushButton* btnClose = new QPushButton("Close");
+        btnClose->setStyleSheet("font-size: 16px; min-height: 38px;");
+
+        layout->addWidget(textEdit);
+        layout->addWidget(btnClose);
+
+        connect(btnClose, &QPushButton::clicked, &dialog, [&]() {
+            dialog.accept();
+            });
+
+        dialog.exec();
         });
 
     connect(btnExit, &QPushButton::clicked, this, [=]() {
@@ -147,24 +200,7 @@ void QtWidgetsApplication1::createGamePage()
     refreshTimer->start(50);
 
     connect(ui.btnRecord, &QPushButton::clicked, this, [=]() {
-        if (solveTimes.isEmpty()) {
-            QMessageBox::information(this, "Records", "No records yet.");
-            return;
-        }
-
-        QString text;
-        text += "Solve History:\n\n";
-
-        for (int i = 0; i < solveTimes.size(); i++) {
-            text += QString("%1. %2 seconds\n")
-                .arg(i + 1)
-                .arg(solveTimes[i], 0, 'f', 2);
-        }
-
-        text += "\nBest Time: ";
-        text += QString("%1 seconds").arg(bestTime, 0, 'f', 2);
-
-        QMessageBox::information(this, "Records", text);
+        showRecordsDialog();
         });
     connect(ui.btnScramble, &QPushButton::clicked, this, [=]() {
         if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
@@ -371,6 +407,8 @@ void QtWidgetsApplication1::checkSolved()
             isNewRecord = true;
         }
 
+        saveRecords();
+
         updateStatusLabels();
 
         if (isNewRecord) {
@@ -432,6 +470,196 @@ void QtWidgetsApplication1::setMoveButtonsEnabled(bool enabled)
     ui.btnL->setEnabled(enabled);
     ui.btnD->setEnabled(enabled);
     ui.btnB->setEnabled(enabled);
+}
+void QtWidgetsApplication1::loadRecords()
+{
+    solveTimes.clear();
+    bestTime = -1.0;
+
+    QFile file("records.txt");
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+
+    QTextStream in(&file);
+
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+
+        if (line.isEmpty()) {
+            continue;
+        }
+
+        bool ok = false;
+        double time = line.toDouble(&ok);
+
+        if (ok) {
+            solveTimes.push_back(time);
+
+            if (bestTime < 0 || time < bestTime) {
+                bestTime = time;
+            }
+        }
+    }
+
+    file.close();
+}
+void QtWidgetsApplication1::saveRecords()
+{
+    QFile file("records.txt");
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return;
+    }
+
+    QTextStream out(&file);
+
+    for (int i = 0; i < solveTimes.size(); i++) {
+        out << QString::number(solveTimes[i], 'f', 2) << "\n";
+    }
+
+    file.close();
+}
+void QtWidgetsApplication1::recalculateBestTime()
+{
+    bestTime = -1.0;
+
+    for (double t : solveTimes) {
+        if (bestTime < 0 || t < bestTime) {
+            bestTime = t;
+        }
+    }
+}
+void QtWidgetsApplication1::showRecordsDialog()
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle("Records");
+    dialog.resize(420, 360);
+
+    QPushButton* btnDelete = new QPushButton("Delete Selected");
+    QPushButton* btnClear = new QPushButton("Clear All");
+    QPushButton* btnClose = new QPushButton("Close");
+    btnDelete->setEnabled(false);
+
+    QVBoxLayout* mainLayout = new QVBoxLayout(&dialog);
+
+    QLabel* title = new QLabel("Solve Records");
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("font-size: 22px; font-weight: bold;");
+
+    QLabel* bestLabel = new QLabel();
+    bestLabel->setAlignment(Qt::AlignCenter);
+
+    if (bestTime < 0) {
+        bestLabel->setText("Best Time: --");
+    }
+    else {
+        bestLabel->setText(QString("Best Time: %1 s").arg(bestTime, 0, 'f', 2));
+    }
+
+    bestLabel->setStyleSheet("font-size: 16px;");
+
+    QTableWidget* table = new QTableWidget();
+    table->setColumnCount(2);
+    table->setHorizontalHeaderLabels(QStringList() << "No." << "Time");
+
+    table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(false);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(table->selectionModel(), &QItemSelectionModel::selectionChanged,
+        &dialog, [=]() {
+            bool hasSelection = !table->selectionModel()->selectedRows().isEmpty();
+            btnDelete->setEnabled(hasSelection);
+        });
+    table->setRowCount(solveTimes.size());
+
+    for (int i = 0; i < solveTimes.size(); i++) {
+        QTableWidgetItem* indexItem = new QTableWidgetItem(QString::number(i + 1));
+        QTableWidgetItem* timeItem = new QTableWidgetItem(
+            QString("%1 s").arg(solveTimes[i], 0, 'f', 2)
+        );
+
+        indexItem->setTextAlignment(Qt::AlignCenter);
+        timeItem->setTextAlignment(Qt::AlignCenter);
+
+        table->setItem(i, 0, indexItem);
+        table->setItem(i, 1, timeItem);
+    }
+
+    table->clearSelection();
+    table->setCurrentCell(-1, -1);
+    btnDelete->setEnabled(false);
+
+    QString btnStyle = "font-size: 14px; min-height: 35px;";
+    btnDelete->setStyleSheet(btnStyle);
+    btnClear->setStyleSheet(btnStyle);
+    btnClose->setStyleSheet(btnStyle);
+
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout->addWidget(btnDelete);
+    buttonLayout->addWidget(btnClear);
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(btnClose);
+
+    mainLayout->addWidget(title);
+    mainLayout->addWidget(bestLabel);
+    mainLayout->addWidget(table);
+    mainLayout->addLayout(buttonLayout);
+
+    connect(btnDelete, &QPushButton::clicked, &dialog, [&]() {
+        QModelIndexList selectedRows = table->selectionModel()->selectedRows();
+
+        if (selectedRows.isEmpty()) {
+            QMessageBox::information(&dialog, "Records", "Please select a record first.");
+            return;
+        }
+
+        int row = selectedRows.first().row();
+
+        if (row < 0 || row >= solveTimes.size()) {
+            QMessageBox::information(&dialog, "Records", "Invalid selection.");
+            return;
+        }
+
+        solveTimes.removeAt(row);
+        recalculateBestTime();
+        saveRecords();
+
+        table->removeRow(row);
+
+        for (int i = 0; i < table->rowCount(); i++) {
+            table->item(i, 0)->setText(QString::number(i + 1));
+        }
+
+        table->clearSelection();
+        table->setCurrentCell(-1, -1);
+        btnDelete->setEnabled(false);
+
+        if (bestTime < 0) {
+            bestLabel->setText("Best Time: --");
+        }
+        else {
+            bestLabel->setText(QString("Best Time: %1 s").arg(bestTime, 0, 'f', 2));
+        }
+        });
+
+    connect(btnClear, &QPushButton::clicked, &dialog, [&]() {
+        solveTimes.clear();
+        bestTime = -1.0;
+        saveRecords();
+
+        table->setRowCount(0);
+        bestLabel->setText("Best Time: --");
+        });
+
+    connect(btnClose, &QPushButton::clicked, &dialog, [&]() {
+        dialog.accept();
+        });
+
+    dialog.exec();
 }
 QtWidgetsApplication1::~QtWidgetsApplication1()
 {}

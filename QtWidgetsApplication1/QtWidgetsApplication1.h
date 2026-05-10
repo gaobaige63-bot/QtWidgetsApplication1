@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QElapsedTimer>  
 #include<QVector>
+#include<QFile>
+#include<QTextStream>
 
 class QtWidgetsApplication1 : public QMainWindow
 {
@@ -52,5 +54,9 @@ private:
     void startTimerOnFirstMove();
     void checkSolved();
 
+    void loadRecords();
+    void saveRecords();
+    void showRecordsDialog();
+    void recalculateBestTime();
 };
 
