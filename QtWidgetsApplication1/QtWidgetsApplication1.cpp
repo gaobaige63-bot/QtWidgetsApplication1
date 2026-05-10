@@ -39,6 +39,15 @@ void QtWidgetsApplication1::createMenuPage()
 {
     menuPage = new QWidget(this);
 
+    menuPage->setObjectName("menuPage");
+    menuPage->setStyleSheet(
+        "#menuPage {"
+        "background-image: url(:/Image.png);"
+        "background-position: center;"
+        "background-repeat: no-repeat;"
+        "}"
+    );
+
     QVBoxLayout* layout = new QVBoxLayout(menuPage);
     layout->setAlignment(Qt::AlignCenter);
 
@@ -52,9 +61,21 @@ void QtWidgetsApplication1::createMenuPage()
     QPushButton* btnExit = new QPushButton("Exit");
 
     QString menuBtnStyle =
+        "QPushButton {"
         "font-size: 22px;"
-        "min-width: 260px;"
-        "min-height: 55px;";
+        "min-width: 280px;"
+        "min-height: 58px;"
+        "border-radius: 12px;"
+        "background-color: rgba(30, 30, 40, 190);"
+        "color: white;"
+        "border: 1px solid rgba(255,255,255,100);"
+        "}"
+        "QPushButton:hover {"
+        "background-color: rgba(60, 90, 150, 220);"
+        "}"
+        "QPushButton:pressed {"
+        "background-color: rgba(30, 60, 120, 230);"
+        "}";
 
     btnPractice->setStyleSheet(menuBtnStyle);
     btnChallenge->setStyleSheet(menuBtnStyle);

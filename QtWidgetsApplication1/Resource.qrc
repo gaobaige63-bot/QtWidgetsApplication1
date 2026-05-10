@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>help.txt</file>
+        <file>Image.png</file>
     </qresource>
 </RCC>
