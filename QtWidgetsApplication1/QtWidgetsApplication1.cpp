@@ -145,6 +145,12 @@ void QtWidgetsApplication1::createGamePage()
 {
     gamePage = new QWidget(this);
 
+    gamePage->setObjectName("gamePage");
+    gamePage->setStyleSheet(
+        "#gamePage {"
+        "background-color: #101018;"
+        "}"
+    ); 
     QVBoxLayout* outerLayout = new QVBoxLayout(gamePage);
     QString btnStyle = "font-size: 18px; min-height: 50px;";
 
@@ -432,22 +438,7 @@ void QtWidgetsApplication1::checkSolved()
 
         updateStatusLabels();
 
-        if (isNewRecord) {
-            QMessageBox::information(
-                this,
-                "New Record!",
-                QString("New best time: %1 seconds!").arg(seconds, 0, 'f', 2)
-            );
-        }
-        else {
-            QMessageBox::information(
-                this,
-                "Solved!",
-                QString("Solved in %1 seconds.\nBest time: %2 seconds.")
-                .arg(seconds, 0, 'f', 2)
-                .arg(bestTime, 0, 'f', 2)
-            );
-        }
+        showSolvedDialog(seconds, isNewRecord);
     }
     
     else if (gameStarted) {
@@ -458,6 +449,98 @@ void QtWidgetsApplication1::checkSolved()
     }
 
     updateStatusLabels();
+}
+void QtWidgetsApplication1::showSolvedDialog(double seconds, bool isNewRecord)
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle(isNewRecord ? "New Record!" : "Solved!");
+    dialog.resize(420, 260);
+
+    dialog.setStyleSheet(
+        "QDialog {"
+        "background-color: #15151d;"
+        "}"
+        "QLabel {"
+        "color: white;"
+        "}"
+        "QPushButton {"
+        "font-size: 16px;"
+        "min-height: 38px;"
+        "border-radius: 8px;"
+        "background-color: #3a3a46;"
+        "color: white;"
+        "border: 1px solid #666;"
+        "}"
+        "QPushButton:hover {"
+        "background-color: #4a4a58;"
+        "}"
+        "QPushButton:pressed {"
+        "background-color: #2a2a34;"
+        "}"
+    );
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(30, 25, 30, 25);
+    layout->setSpacing(15);
+
+    QLabel* title = new QLabel(isNewRecord ? "NEW RECORD!" : "SOLVED!");
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet(
+        "font-size: 30px;"
+        "font-weight: bold;"
+        "color: #ffd34d;"
+    );
+
+    QLabel* timeLabel = new QLabel(
+        QString("Time: %1 s").arg(seconds, 0, 'f', 2)
+    );
+    timeLabel->setAlignment(Qt::AlignCenter);
+    timeLabel->setStyleSheet("font-size: 22px; font-weight: bold;");
+
+    QLabel* bestLabel = new QLabel();
+
+    if (bestTime < 0) {
+        bestLabel->setText("Best Time: --");
+    }
+    else {
+        bestLabel->setText(QString("Best Time: %1 s").arg(bestTime, 0, 'f', 2));
+    }
+
+    bestLabel->setAlignment(Qt::AlignCenter);
+    bestLabel->setStyleSheet("font-size: 16px; color: #cccccc;");
+
+    QLabel* messageLabel = new QLabel();
+
+    if (isNewRecord) {
+        messageLabel->setText("Congratulations! You broke your record.");
+    }
+    else {
+        messageLabel->setText("Good job! Keep practicing.");
+    }
+
+    messageLabel->setAlignment(Qt::AlignCenter);
+    messageLabel->setStyleSheet("font-size: 15px; color: #aaaaaa;");
+
+    QPushButton* btnOK = new QPushButton("OK");
+    btnOK->setFixedWidth(120);
+
+    QHBoxLayout* btnLayout = new QHBoxLayout();
+    btnLayout->addStretch();
+    btnLayout->addWidget(btnOK);
+    btnLayout->addStretch();
+
+    layout->addWidget(title);
+    layout->addWidget(timeLabel);
+    layout->addWidget(bestLabel);
+    layout->addWidget(messageLabel);
+    layout->addSpacing(10);
+    layout->addLayout(btnLayout);
+
+    connect(btnOK, &QPushButton::clicked, &dialog, [&]() {
+        dialog.accept();
+        });
+
+    dialog.exec();
 }
 void QtWidgetsApplication1::enterGame(bool challenge)
 {

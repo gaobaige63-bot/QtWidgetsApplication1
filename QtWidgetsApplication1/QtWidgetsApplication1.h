@@ -53,7 +53,7 @@ private:
     void updateStatusLabels();
     void startTimerOnFirstMove();
     void checkSolved();
-
+    void showSolvedDialog(double seconds, bool isNewRecord);
     void loadRecords();
     void saveRecords();
     void showRecordsDialog();
